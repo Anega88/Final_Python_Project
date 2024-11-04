@@ -106,7 +106,28 @@ class Authorization_and_testing:
         except Exception as e:
             print(f"Ошибка при выполнении расширенного поиска: {e}")
 
-    
+
+    def open_reviews(self, movie_name):
+        driver = self._driver
+        wait = WebDriverWait(driver, 30)
+
+        # Поиск фильма на главной странице
+        self.search_main_page(movie_name)
+        self.click_search_button()
+
+        # Ожидание появления фильма в результатах поиска и клик по нему
+        movie_link = wait.until(EC.element_to_be_clickable((By.XPATH, f'//a[text()="{movie_name}"]')))
+        movie_link.click()
+
+        # Ожидание появления ссылки на "Рецензии зрителей"
+        reviews = wait.until(EC.presence_of_element_located((By.CSS_SELECTOR, '.styles_reviewCountLight__XNZ9P.styles_reviewCount__w_RrM'))).click()
+        reviews_link = wait.until(EC.presence_of_element_located((By.LINK_TEXT, "Рецензии зрителей")))
+
+
+        # Клик по ссылке "Рецензии зрителей"
+        reviews_link.click()
+
+   
 
     def close_webdriver(self):
         """Closes the WebDriver."""

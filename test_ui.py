@@ -6,6 +6,7 @@ from selenium.webdriver.common.by import By
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
 from Authorization_and_testing import Authorization_and_testing
+from time import sleep
 
 base_url = "https://www.kinopoisk.ru/"
 
@@ -67,3 +68,16 @@ def test_extended_search_movie(auth):
     except Exception as e:
         assert False, f"Movie '{expected_movie_text}' was not found in search results: {e}"
 
+def test_open_reviews(auth):
+    driver = auth._driver
+    auth.open_reviews("Терминатор")
+    all_reviews_label = driver.find_element(By.XPATH, '//span[text()="Все:"]')
+    
+    # Находим количество рецензий в следующем элементе <b>
+    all_reviews_count = all_reviews_label.find_element(By.XPATH, 'following-sibling::b').text
+
+    # Преобразуем строку в число
+    number_of_reviews = int(all_reviews_count)
+
+    # Assert для проверки, что количество рецензий больше 0
+    assert number_of_reviews > 0, f"Expected at least one review, but found {number_of_reviews}."
