@@ -4,6 +4,7 @@ from webdriver_manager.chrome import ChromeDriverManager
 from selenium.webdriver.common.by import By
 from selenium.webdriver.support import expected_conditions as EC
 from selenium.webdriver.support.ui import WebDriverWait
+from selenium.webdriver.common.action_chains import ActionChains
 import config
 import requests
 
@@ -60,23 +61,29 @@ class Authorization_and_testing:
         search_input = self._driver.find_element(By.CSS_SELECTOR, 'input[name="kp_query"]')
         search_input.clear()  # Очищаем поле поиска перед вводом
         search_input.send_keys(movie_name)
-        self.click_search_button()
+        self.click_main_search_button()
 
-    def click_search_button(self):
-        """Clicks the search button."""
+    def search_main_page_actor(self, actor):
+        self.actor = actor
+        search_input = self._driver.find_element(By.CSS_SELECTOR, 'input[name="kp_query"]')
+        search_input.send_keys(actor)
+        self.click_main_search_button()
+
+
+    def click_main_search_button(self):
+        """Clicks the main SVG search button."""
         try:
-            # Пробуем найти первую кнопку (по значку поиска)
-            search_button_svg = self._driver.find_element(By.CSS_SELECTOR, 'svg.styles_iconActive__dJx1_')
-            search_button_svg.click()  # Нажимаем на первую кнопку поиска
+            search_button_svg = WebDriverWait(self._driver, 10).until(
+                 EC.presence_of_element_located((By.XPATH, '//button[contains(@class, "styles_submit__2AIpj") and @aria-label="Найти"]'))
+                )
+            search_button_svg.click()
         except Exception as e:
-            print(f"Error clicking SVG search button: {e}")
-            try:
-                # Если первая кнопка не найдена, пробуем нажать на альтернативную кнопку
-                search_button_alt = self._driver.find_element(By.CSS_SELECTOR, 'input.el_18.submit.nice_button')
-                search_button_alt.click()
-            except Exception as e_alt:
-                print(f"Error clicking alternative search button: {e_alt}")
+            print(f"Error clicking main SVG search button: {e}")
 
+    def click_extended_search_button(self):
+        search_button_alt = self._driver.find_element(By.CSS_SELECTOR, 'input[class="el_18 submit nice_button"]')
+        search_button_alt.click()
+            
 
     def clear_search_field(self):
         """Clears the search input field."""
@@ -108,12 +115,9 @@ class Authorization_and_testing:
             input_actor = wait.until(EC.visibility_of_element_located((By.CSS_SELECTOR, 'input[name="m_act[actor]"]')))
             input_actor.send_keys(actor)
 
-            genre_dropdown = wait.until(EC.visibility_of_element_located((By.CSS_SELECTOR, '#m_act\\[genre\\]')))
-            genre_option = genre_dropdown.find_element(By.XPATH, f'//option[text()="{genre}"]')
+            genre_dropdown = wait.until(EC.visibility_of_element_located((By.CSS_SELECTOR, 'id="m_act[genre]"')))
+            genre_option = genre_dropdown.find_element(By.XPATH, f'//option[@value="{genre}"]')
             genre_option.click()
-
-            search_button = wait.until(EC.element_to_be_clickable((By.CSS_SELECTOR, 'input.el_18.submit.nice_button')))
-            search_button.click()
         
         except Exception as e:
             print(f"Ошибка при выполнении расширенного поиска: {e}")
@@ -125,7 +129,7 @@ class Authorization_and_testing:
 
         # Поиск фильма на главной странице
         self.search_main_page(movie_name)
-        self.click_search_button()
+        self.click_main_search_button()
 
         # Ожидание появления фильма в результатах поиска и клик по нему
         movie_link = wait.until(EC.element_to_be_clickable((By.XPATH, f'//a[text()="{movie_name}"]')))
@@ -135,9 +139,32 @@ class Authorization_and_testing:
         reviews = wait.until(EC.presence_of_element_located((By.CSS_SELECTOR, '.styles_reviewCountLight__XNZ9P.styles_reviewCount__w_RrM'))).click()
         reviews_link = wait.until(EC.presence_of_element_located((By.LINK_TEXT, "Рецензии зрителей")))
 
-
         # Клик по ссылке "Рецензии зрителей"
         reviews_link.click()
+
+
+    def open_filmography(self, actor):
+        driver = self._driver
+        wait = WebDriverWait(driver, 30)
+
+        self.search_main_page_actor(actor)
+        self.click_main_search_button()
+
+        # Ожидание появления фильма в результатах поиска и клик по нему
+        actor_link = wait.until(EC.element_to_be_clickable((By.XPATH, f'//a[text()="{actor}"]')))
+        actor_link.click()
+
+        driver.execute_script("window.scrollBy(0, 2800)")
+    
+        # Прокрутка до кнопки "Фильмография" с использованием ActionChains
+        filmography_button = wait.until(EC.presence_of_element_located((By.CSS_SELECTOR, 'button[data-tid="9fd92bab"] .styles_title__skJ4z')))
+        ActionChains(driver).scroll_to_element(filmography_button).perform()
+
+        # Клик по кнопке "Фильмография"
+        filmography_button.click()
+    
+        # Возвращаемся к основному контенту, если необходимо выполнять другие действия на странице
+        driver.switch_to.default_content()
    
 
     def close_webdriver(self):
