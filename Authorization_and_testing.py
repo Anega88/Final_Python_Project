@@ -4,6 +4,7 @@ from webdriver_manager.chrome import ChromeDriverManager
 from selenium.webdriver.common.by import By
 from selenium.webdriver.support import expected_conditions as EC
 from selenium.webdriver.support.ui import WebDriverWait
+import config
 import requests
 
 class Authorization_and_testing:
@@ -18,8 +19,19 @@ class Authorization_and_testing:
         self._driver.get(self.base_url)
         self._driver.implicitly_wait(4)
         self._driver.maximize_window()
-        self.click_captcha_checkbox()  # Нажимаем на чекбокс сразу после загрузки страницы
+        self.add_auth_token_to_cookies(config.auth_token)
+        self.click_captcha_checkbox()
         return self._driver
+    
+    def add_auth_token_to_cookies(self, token):
+        """Adds the authorization token to browser cookies."""
+        self._driver.add_cookie({
+            "name": "auth_token",  # Имя куки для токена авторизации
+            "value": token,
+            "path": "/",
+            "domain": "www.kinopoisk.ru"  # Убедитесь, что домен совпадает с вашим сайтом
+        })
+        self._driver.refresh() 
 
     def click_captcha_checkbox(self):
         """Clicks the CAPTCHA checkbox."""
@@ -126,7 +138,6 @@ class Authorization_and_testing:
 
         # Клик по ссылке "Рецензии зрителей"
         reviews_link.click()
-
    
 
     def close_webdriver(self):

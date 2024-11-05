@@ -6,16 +6,14 @@ from selenium.webdriver.common.by import By
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
 from Authorization_and_testing import Authorization_and_testing
-
-base_url = "https://www.kinopoisk.ru/"
-api_key = "RTAGMBB-P1BM4QF-JKHEF4E-CXQ1N21"
+import config
 
 
 @pytest.mark.api
 @pytest.fixture(scope="module")
 def auth():
     """Fixture to set up Authorization for API tests."""
-    return Authorization_and_testing(base_url, api_key)
+    return Authorization_and_testing(config.base_url, config.auth_token)
 
 def test_api_requests(auth):
     """Sample API test."""

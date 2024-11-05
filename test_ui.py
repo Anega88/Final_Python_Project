@@ -6,15 +6,15 @@ from selenium.webdriver.common.by import By
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
 from Authorization_and_testing import Authorization_and_testing
+import config
 from time import sleep
 
-base_url = "https://www.kinopoisk.ru/"
 
 @pytest.mark.ui
 @pytest.fixture(scope="module")
 def auth():
     """Fixture to set up and tear down the WebDriver."""
-    auth = Authorization_and_testing(base_url)
+    auth = Authorization_and_testing(config.base_url)
     driver = auth.setup_webdriver()
     yield auth
     auth.close_webdriver()
@@ -23,10 +23,8 @@ def test_functional_ui(auth):
     """Sample UI test."""
     driver = auth._driver
 
-    movie_to_search = "титаник"
-
     # Ищем фильм
-    auth.search_main_page(movie_to_search)
+    auth.search_main_page(config.movie_to_search)
 
     # Нажимаем кнопку поиска
     auth.click_search_button()
@@ -45,16 +43,14 @@ def test_functional_ui(auth):
             assert False, "No search results or error message found."
 
     except Exception as e:
-        assert False, f"Search for '{movie_to_search}' resulted in an error: {e}"
+        assert False, f"Search for '{config.movie_to_search}' resulted in an error: {e}"
 
 def test_extended_search_movie(auth):
     driver = auth._driver
-    movie_name = "Титаник"
-    movie_year = "1997"
-    expected_movie_text = f"{movie_name} ({movie_year})"
+    expected_movie_text = f"{config.movie_name} ({config.movie_year})"
     
     # Выполнение расширенного поиска
-    auth.extended_search_movie(movie_name, movie_year, "США", "Леонардо ДиКаприо", "Комедия")
+    auth.extended_search_movie(config.movie_name, config.movie_year, config.country, config.actor, config.genre)
     auth.click_search_button()
     
     # Ожидание появления заголовка с фильмом
@@ -70,7 +66,7 @@ def test_extended_search_movie(auth):
 
 def test_open_reviews(auth):
     driver = auth._driver
-    auth.open_reviews("Терминатор")
+    auth.open_reviews(config.movie_name)
     all_reviews_label = driver.find_element(By.XPATH, '//span[text()="Все:"]')
     
     # Находим количество рецензий в следующем элементе <b>
