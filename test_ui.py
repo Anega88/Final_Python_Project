@@ -1,11 +1,8 @@
 import pytest
-from selenium import webdriver
-from selenium.webdriver.chrome.service import Service as ChromeService
-from webdriver_manager.chrome import ChromeDriverManager
 from selenium.webdriver.common.by import By
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
-from Authorization_and_testing import Authorization_and_testing
+from Authorization_and_testing_ui import Authorization_and_testing_ui
 import config
 
 
@@ -13,11 +10,12 @@ import config
 @pytest.fixture(scope="function")
 def auth():
     """Fixture to set up and tear down the WebDriver."""
-    auth = Authorization_and_testing(config.base_url)
+    auth = Authorization_and_testing_ui(config.base_url)
     driver = auth.setup_webdriver()
     yield auth
     auth.close_webdriver()
 
+@pytest.mark.ui
 def test_search_movie_main_page(auth):
     """Sample UI test."""
     driver = auth._driver
@@ -43,6 +41,7 @@ def test_search_movie_main_page(auth):
         assert False, f"Search for '{config.movie_to_search}' resulted in an error: {e}"
     
 
+@pytest.mark.ui
 def test_search_actor_main_page(auth):
     driver = auth._driver
     auth.search_main_page_actor(config.actor)
@@ -75,7 +74,7 @@ def test_search_actor_main_page(auth):
         assert False, f"Search for '{config.actor}' resulted in an error: {e}"
 
     
-
+@pytest.mark.ui
 def test_extended_search_movie(auth):
     driver = auth._driver
     expected_movie_text = f"{config.movie_to_search} ({config.movie_year})"
@@ -96,7 +95,7 @@ def test_extended_search_movie(auth):
         assert False, f"Movie '{expected_movie_text}' was not found in search results: {e}"
     
     
-
+@pytest.mark.ui
 def test_open_reviews(auth):
     driver = auth._driver
     auth.open_reviews(config.movie_name)
@@ -112,7 +111,7 @@ def test_open_reviews(auth):
     assert number_of_reviews > 0, f"Expected at least one review, but found {number_of_reviews}."
 
    
-
+@pytest.mark.ui
 def test_open_filmography(auth):
     auth.open_filmography(config.actor)
 

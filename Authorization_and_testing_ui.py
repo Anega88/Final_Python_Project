@@ -6,12 +6,11 @@ from selenium.webdriver.support import expected_conditions as EC
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.common.action_chains import ActionChains
 import config
-import requests
 
-class Authorization_and_testing:
-    def __init__(self, base_url, api_key=None):
+
+class Authorization_and_testing_ui:
+    def __init__(self, base_url):
         self.base_url = base_url
-        self.api_key = api_key
         self._driver = None
 
     def setup_webdriver(self):
@@ -44,17 +43,6 @@ class Authorization_and_testing:
         except Exception as e:
             print(f"Failed to click CAPTCHA checkbox: {e}")
 
-
-    def connect_to_api(self, endpoint, params=None):
-        """Connects to the API using the provided API key and endpoint."""
-        headers = {
-            'Authorization': f'Bearer {self.api_key}',
-            'Content-Type': 'application/json'
-        }
-        url = f"{self.base_url}{endpoint}"
-        response = requests.get(url, headers=headers, params=params)
-        response.raise_for_status()  # Raises an error for unsuccessful responses
-        return response.json()
     
     def search_main_page(self, movie_name):
         self.movie_name = movie_name
