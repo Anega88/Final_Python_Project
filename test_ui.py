@@ -1,17 +1,16 @@
 import pytest
-import config
+import re
+from Authorization_and_testing_ui import Authorization_and_testing_ui
 from selenium.webdriver.common.by import By
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
 
 
 @pytest.mark.ui
-def test_search_movie_main_page(auth_ui):
+def test_search_movie_main_page(setup_auth_and_driver, test_config):
     """Sample UI test."""
-    driver = auth_ui._driver
-
-    # Ищем фильм
-    auth_ui.search_main_page(config.movie_to_search)
+    auth_ui, driver = setup_auth_and_driver
+    auth_ui.search_main_page(test_config.movie_to_search)
 
     try:
         # Проверяем, есть ли результаты поиска
@@ -19,7 +18,7 @@ def test_search_movie_main_page(auth_ui):
             # Если результаты поиска присутствуют, проверяем, что фильм отображается
             film_name_element = driver.find_element(By.CSS_SELECTOR, '.search_results .name a')
             # Приводим текст к нижнему регистру и убираем пробелы
-            assert film_name_element.text.strip().lower() == config.movie_to_search.strip().lower(), "Film name is not as expected."
+            assert film_name_element.text.strip().lower() == test_config.movie_to_search.strip().lower(), "Film name is not as expected."
         elif driver.find_elements(By.CSS_SELECTOR, 'h2.textorangebig'):
             # Если сообщение о том, что ничего не найдено, присутствует
             no_results_message = driver.find_element(By.CSS_SELECTOR, 'h2.textorangebig').text
@@ -28,13 +27,13 @@ def test_search_movie_main_page(auth_ui):
             assert False, "No search results or error message found."
 
     except Exception as e:
-        assert False, f"Search for '{config.movie_to_search}' resulted in an error: {e}"
+        assert False, f"Search for '{test_config.movie_to_search}' resulted in an error: {e}"
     
 
 @pytest.mark.ui
-def test_search_actor_main_page(auth_ui):
-    driver = auth_ui._driver
-    auth_ui.search_main_page_actor(config.actor)
+def test_search_actor_main_page(setup_auth_and_driver, test_config ):
+    auth_ui, driver = setup_auth_and_driver    
+    auth_ui.search_main_page_actor(test_config.actor)
     
     try:
         # Ожидаем, пока появится страница с результатами поиска
@@ -45,7 +44,6 @@ def test_search_actor_main_page(auth_ui):
         print(f"Results text: {search_results_text}")  # Отладочный вывод
         
         # Извлекаем количество результатов из текста с помощью регулярного выражения
-        import re
         match = re.search(r'результаты: (\d+)', search_results_text)
         
         if match:
@@ -56,26 +54,26 @@ def test_search_actor_main_page(auth_ui):
             actor_name_element = driver.find_element(By.CSS_SELECTOR, '.search_results_topText b')
             
             # Сравниваем имя актера с ожидаемым
-            assert actor_name_element.text.strip().lower() == config.actor.strip().lower(), "Actor name is not as expected."
+            assert actor_name_element.text.strip().lower() == test_config.actor.strip().lower(), "Actor name is not as expected."
         else:
             assert False, "Results count not found in the search results text."
         
     except Exception as e:
-        assert False, f"Search for '{config.actor}' resulted in an error: {e}"
+        assert False, f"Search for '{test_config.actor}' resulted in an error: {e}"
 
     
 @pytest.mark.ui
-def test_extended_search_movie(auth_ui):
-    driver = auth_ui._driver
-    expected_movie_text = f"{config.movie_to_search} ({config.movie_year})"
+def test_extended_search_movie(setup_auth_and_driver, test_config):
+    auth_ui, driver = setup_auth_and_driver 
+    expected_movie_text = f"{test_config.movie_to_search} ({test_config.movie_year})"
     
     # Выполнение расширенного поиска
-    auth_ui.extended_search_movie(config.movie_to_search, config.movie_year, config.country, config.actor, config.genre)
+    auth_ui.extended_search_movie(test_config.movie_to_search, test_config.movie_year, test_config.country, test_config.actor, test_config.genre)
     auth_ui.click_extended_search_button()  
 
     # Ожидание появления заголовка с фильмом
     try:
-        h1_element = WebDriverWait(driver, 10).until(
+        h1_element = WebDriverWait(driver, 5).until(
             EC.visibility_of_element_located((By.CSS_SELECTOR, 'h1[data-tid="f22e0093"]'))
         )
         # Находим вложенный элемент <span> с названием фильма
@@ -86,9 +84,9 @@ def test_extended_search_movie(auth_ui):
     
     
 @pytest.mark.ui
-def test_open_reviews(auth_ui):
-    driver = auth_ui._driver
-    auth_ui.open_reviews(config.movie_name)
+def test_open_reviews(setup_auth_and_driver, test_config):
+    auth_ui, driver = setup_auth_and_driver 
+    auth_ui.open_reviews(test_config.movie_name)
     all_reviews_label = driver.find_element(By.XPATH, '//span[text()="Все:"]')
     
     # Находим количество рецензий в следующем элементе <b>
@@ -102,15 +100,16 @@ def test_open_reviews(auth_ui):
 
    
 @pytest.mark.ui
-def test_open_filmography(auth_ui):
-    auth_ui.open_filmography(config.actor)
+def test_open_filmography(setup_auth_and_driver, test_config):
+    auth_ui, driver = setup_auth_and_driver 
+    auth_ui.open_filmography(test_config.actor)
 
     # Предположим, что на странице с фильмографией есть заголовок с именем актера
-    wait = WebDriverWait(auth_ui._driver, 30)
-    actor_header = wait.until(EC.presence_of_element_located((By.XPATH, f'//h1[contains(text(), "{config.actor}")]')))
+    wait = WebDriverWait(driver, 20)
+    actor_header = wait.until(EC.presence_of_element_located((By.XPATH, f'//h1[contains(text(), "{test_config.actor}")]')))
     
     # Убедимся, что заголовок содержит имя актера
-    assert actor_header.is_displayed(), f"Фильмография для актера '{config.actor}' не открылась."
+    assert actor_header.is_displayed(), f"Фильмография для актера '{test_config.actor}' не открылась."
 
     # Проверяем наличие элемента с количеством фильмов
     film_count_element = wait.until(EC.presence_of_element_located((By.CSS_SELECTOR, 'span.styles_subtitle__V93vt')))
@@ -122,7 +121,5 @@ def test_open_filmography(auth_ui):
     film_count = int(film_count_text.split()[0])  # или используйте регулярное выражение для более сложных случаев
 
     # Убедимся, что количество фильмов больше 0
-    assert film_count > 0, f"Не найдено фильмов для актера '{config.actor}'. Количество фильмов: {film_count_text}."
-
-
+    assert film_count > 0, f"Не найдено фильмов для актера '{test_config.actor}'. Количество фильмов: {film_count_text}."
 
