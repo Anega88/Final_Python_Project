@@ -8,7 +8,6 @@ from webdriver_manager.chrome import ChromeDriverManager
 from selenium.webdriver.common.by import By
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
-from time import sleep
 
 @pytest.fixture(scope="function")
 def setup_auth_and_driver(test_config):
@@ -68,6 +67,6 @@ def test_config():
 
 
 @pytest.fixture(scope="function")
-def auth_api():
+def auth_api(test_config):
     """Fixture to set up the Authorization API client."""
     return Authorization_and_testing_api(test_config.base_url_api, test_config.auth_token)

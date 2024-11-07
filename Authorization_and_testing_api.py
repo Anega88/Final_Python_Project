@@ -1,6 +1,7 @@
 import requests
 import config
 
+
 class Authorization_and_testing_api:
     def __init__(self, base_url_api, api_key=None):
         self.base_url = base_url_api
