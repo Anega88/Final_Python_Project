@@ -64,5 +64,24 @@ class Authorization_and_testing_api:
         print(f"API response: {response.text}")
 
         return response.json()  # Попробуем преобразовать в JSON
+    
+
+    def search_genre_and_interval(self):
+            """Запрос для получения списка драм за указанный период."""
+            params = {
+                "page": config.page,
+                "limit": config.limit,
+                "year": config.years,
+                "genres.name": config.genre
+                }
+            # Логируем параметры запроса
+            print(f"Request parameters: {params}")
+
+            response = self.connect_to_api_with_params(params=params)
+
+            # Логируем ответ для диагностики
+            print(f"API response: {response.text}")
+
+            return response.json()  # Попробуем преобразовать в JSON
 
 

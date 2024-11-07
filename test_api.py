@@ -23,11 +23,7 @@ def test_movie_search(auth):
     """API test for searching a movie."""
     response = auth.search_movie()  # Вызов метода search_movie, который формирует запрос с параметрами
     
-    # Преобразование ответа в JSON (Python словарь)
     data = response.json()
-    
-    # Печать ответа для диагностики
-    print(data)
     
     # Проверка наличия данных в ответе
     assert "docs" in data, "Response does not contain 'docs' key"
@@ -63,11 +59,10 @@ def test_alternative_search(auth):
     """API test for searching"""
     response = auth.alternative_searching()
 
-    # Проверяем, что в ответе нет ошибки
     if 'error' in response:
         pytest.fail(f"API returned an error: {response['error']}")
 
-    data = response  # Это уже будет словарь с данными
+    data = response
     assert "docs" in data, "'docs' key not found in response"
     assert isinstance(data["docs"], list), "'docs' is not a list"
 
@@ -82,11 +77,63 @@ def test_alternative_search(auth):
         assert "genres" in movie, "'genres' key not found in movie"
         assert isinstance(movie["genres"], list), "'genres' is not a list"
 
-    # Проверяем, что количество элементов соответствует ожиданиям
-    assert data["total"] == 25, f"Expected 25 total movies, but got {data['total']}"
-    assert data["limit"] == 1, f"Expected limit of 1, but got {data['limit']}"
-    assert data["page"] == 1, f"Expected page 1, but got {data['page']}"
-    assert data["pages"] == 25, f"Expected 25 pages, but got {data['pages']}"
+        # Проверяем, что количество элементов соответствует ожиданиям
+        assert data["total"] == 25, f"Expected 25 total movies, but got {data['total']}"
+        assert data["limit"] == 1, f"Expected limit of 1, but got {data['limit']}"
+        assert data["page"] == 1, f"Expected page 1, but got {data['page']}"
+        assert data["pages"] == 25, f"Expected 25 pages, but got {data['pages']}"
+
+        # Проверка периода, что год фильма в пределах указанного диапазона
+        min_year, max_year = map(int, config.years.split("-"))
+        movie_year = movie["year"]
+        assert min_year <= movie_year <= max_year, f"Movie year {movie_year} is not in the range {min_year}-{max_year}"
+
+        # Проверка рейтинга, что рейтинг фильма в пределах указанного
+        min_rate, max_rate = map(int, config.rating.split("-"))
+        movie_rating = movie['rating']["kp"]
+        assert min_rate <= movie_rating<= max_rate, f"Movie rating {movie_rating} is not in the range {min_rate}-{max_rate}"
+
+    else:
+        print("No movies found in the response")
 
 
+@pytest.mark.api
+def test_genre_and_interval(auth):
+    """API test for searching drama movies from 2000 to 2001."""
+    # Выполняем запрос с параметрами
+    response = auth.search_genre_and_interval()
+
+    # Печать тела ответа для диагностики
+    print(f"API response: {response}")
+
+    # Проверка, что в ответе нет ошибки
+    if 'error' in response:
+        pytest.fail(f"API returned an error: {response['error']}")
+
+    data = response  # Используем данные из ответа без дополнительного преобразования
+    assert "docs" in data, "'docs' key not found in response"
+    assert isinstance(data["docs"], list), "'docs' is not a list"
+      
+    # Проверяем, что хотя бы один фильм в списке содержит ожидаемые ключи
+    if data["docs"]:
+        movie = data["docs"][0]
+        assert "id" in movie, "'id' key not found in movie"
+        assert "name" in movie, "'name' key not found in movie"
+        assert "rating" in movie, "'rating' key not found in movie"
+        assert "kp" in movie["rating"], "'kp' rating not found in movie"
+        assert "description" in movie, "'description' key not found in movie"
+        assert "genres" in movie, "'genres' key not found in movie"
+        assert isinstance(movie["genres"], list), "'genres' is not a list"
+    
+    # Проверка, что жанр, переданный в запросе, присутствует в жанрах фильма
+        genres = [genre["name"] for genre in movie["genres"]]
+        assert config.genre in genres, f"Genre '{config.genre}' not found in movie genres: {genres}"
+
+        # Проверка периода, что год фильма в пределах указанного диапазона
+        min_year, max_year = map(int, config.years.split("-"))  # Преобразуем строку "2000-2001" в два числа
+        movie_year = movie["year"]
+        assert min_year <= movie_year <= max_year, f"Movie year {movie_year} is not in the range {min_year}-{max_year}"
+
+    else:
+        print("No movies found in the response")
 

@@ -5,7 +5,7 @@ movie_to_search = "Титаник"
 movie_year = "1997"
 country = "США"
 actor = "Леонардо ДиКаприо"
-genre = "Комедия"
+genre = "Драма"
 
 # api
 base_url_api = "https://api.kinopoisk.dev/v1.4/movie"
