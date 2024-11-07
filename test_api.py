@@ -1,17 +1,11 @@
 import pytest
-from Authorization_and_testing_api import Authorization_and_testing_api
 import config
 
-@pytest.mark.api
-@pytest.fixture(scope="function")
-def auth():
-    """Fixture to set up the Authorization API client."""
-    return Authorization_and_testing_api(config.base_url_api, config.auth_token)
 
 @pytest.mark.api
-def test_search_id_movie(auth):
+def test_search_id_movie(auth_api):
     """API test for retrieving movie details."""
-    response = auth.search_movie_by_id(config.id_movie) 
+    response = auth_api.search_movie_by_id(config.id_movie) 
     
     # Проверка, что ответ в формате JSON содержит ключ 'id'
     assert "id" in response.json(), "Response does not contain 'id' key"
@@ -21,9 +15,9 @@ def test_search_id_movie(auth):
     assert movie_name == config.movie_to_search, f"Expected movie name to be '{config.movie_to_search}' but got '{movie_name}'"
 
 @pytest.mark.api
-def test_movie_search(auth):
+def test_movie_search(auth_api):
     """API test for searching a movie."""
-    response = auth.search_movie()  # Вызов метода search_movie, который формирует запрос с параметрами
+    response = auth_api.search_movie()  # Вызов метода search_movie, который формирует запрос с параметрами
     
     data = response.json()
     
@@ -60,9 +54,9 @@ def test_movie_search(auth):
     assert min_rate <= movie_rating<= max_rate, f"Movie rating {movie_rating} is not in the range {min_rate}-{max_rate}"
 
 @pytest.mark.api
-def test_actor_search(auth):
+def test_actor_search(auth_api):
     """API test for searching a movie."""
-    response = auth.search_actor()  # Вызов метода search_actor, который формирует запрос с параметрами
+    response = auth_api.search_actor()  # Вызов метода search_actor, который формирует запрос с параметрами
     
     data = response.json()
     
@@ -78,9 +72,9 @@ def test_actor_search(auth):
     assert config.actor_api.lower() in first_actor["name"].lower(), f"Expected query '{config.actor_api}' in movie name but got {first_actor['name']}"
 
 @pytest.mark.api
-def test_alternative_search(auth):
+def test_alternative_search(auth_api):
     """API test for searching"""
-    response = auth.alternative_searching()
+    response = auth_api.alternative_searching()
 
     if 'error' in response:
         pytest.fail(f"API returned an error: {response['error']}")
@@ -118,10 +112,10 @@ def test_alternative_search(auth):
         print("No movies found in the response")
 
 @pytest.mark.api
-def test_genre_and_interval(auth):
+def test_genre_and_interval(auth_api):
     """API test for searching drama movies from 2000 to 2001."""
     # Выполняем запрос с параметрами
-    response = auth.search_genre_and_interval()
+    response = auth_api.search_genre_and_interval()
 
     # Печать тела ответа для диагностики
     print(f"API response: {response}")

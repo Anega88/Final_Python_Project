@@ -1,27 +1,17 @@
 import pytest
+import config
 from selenium.webdriver.common.by import By
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
-from Authorization_and_testing_ui import Authorization_and_testing_ui
-import config
 
 
 @pytest.mark.ui
-@pytest.fixture(scope="function")
-def auth():
-    """Fixture to set up and tear down the WebDriver."""
-    auth = Authorization_and_testing_ui(config.base_url)
-    driver = auth.setup_webdriver()
-    yield auth
-    auth.close_webdriver()
-
-@pytest.mark.ui
-def test_search_movie_main_page(auth):
+def test_search_movie_main_page(auth_ui):
     """Sample UI test."""
-    driver = auth._driver
+    driver = auth_ui._driver
 
     # Ищем фильм
-    auth.search_main_page(config.movie_to_search)
+    auth_ui.search_main_page(config.movie_to_search)
 
     try:
         # Проверяем, есть ли результаты поиска
@@ -42,9 +32,9 @@ def test_search_movie_main_page(auth):
     
 
 @pytest.mark.ui
-def test_search_actor_main_page(auth):
-    driver = auth._driver
-    auth.search_main_page_actor(config.actor)
+def test_search_actor_main_page(auth_ui):
+    driver = auth_ui._driver
+    auth_ui.search_main_page_actor(config.actor)
     
     try:
         # Ожидаем, пока появится страница с результатами поиска
@@ -75,13 +65,13 @@ def test_search_actor_main_page(auth):
 
     
 @pytest.mark.ui
-def test_extended_search_movie(auth):
-    driver = auth._driver
+def test_extended_search_movie(auth_ui):
+    driver = auth_ui._driver
     expected_movie_text = f"{config.movie_to_search} ({config.movie_year})"
     
     # Выполнение расширенного поиска
-    auth.extended_search_movie(config.movie_to_search, config.movie_year, config.country, config.actor, config.genre)
-    auth.click_extended_search_button()  
+    auth_ui.extended_search_movie(config.movie_to_search, config.movie_year, config.country, config.actor, config.genre)
+    auth_ui.click_extended_search_button()  
 
     # Ожидание появления заголовка с фильмом
     try:
@@ -96,9 +86,9 @@ def test_extended_search_movie(auth):
     
     
 @pytest.mark.ui
-def test_open_reviews(auth):
-    driver = auth._driver
-    auth.open_reviews(config.movie_name)
+def test_open_reviews(auth_ui):
+    driver = auth_ui._driver
+    auth_ui.open_reviews(config.movie_name)
     all_reviews_label = driver.find_element(By.XPATH, '//span[text()="Все:"]')
     
     # Находим количество рецензий в следующем элементе <b>
@@ -112,11 +102,11 @@ def test_open_reviews(auth):
 
    
 @pytest.mark.ui
-def test_open_filmography(auth):
-    auth.open_filmography(config.actor)
+def test_open_filmography(auth_ui):
+    auth_ui.open_filmography(config.actor)
 
     # Предположим, что на странице с фильмографией есть заголовок с именем актера
-    wait = WebDriverWait(auth._driver, 30)
+    wait = WebDriverWait(auth_ui._driver, 30)
     actor_header = wait.until(EC.presence_of_element_located((By.XPATH, f'//h1[contains(text(), "{config.actor}")]')))
     
     # Убедимся, что заголовок содержит имя актера
