@@ -16,6 +16,7 @@ search_query = "Терминатор"
 genre_api_first = "фантастика"
 genre_api_second = "боевик"
 country_api = "США"
+actor_api = "Арнольд Шварценеггер"
 page = 1
 limit = 1
 years = "2000-2001"

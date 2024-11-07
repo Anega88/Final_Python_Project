@@ -60,6 +60,24 @@ def test_movie_search(auth):
     assert min_rate <= movie_rating<= max_rate, f"Movie rating {movie_rating} is not in the range {min_rate}-{max_rate}"
 
 @pytest.mark.api
+def test_actor_search(auth):
+    """API test for searching a movie."""
+    response = auth.search_actor()  # Вызов метода search_actor, который формирует запрос с параметрами
+    
+    data = response.json()
+    
+    # Проверка наличия данных в ответе
+    assert "docs" in data, "Response does not contain 'docs' key"
+    assert data["docs"], "Response 'docs' key contains an empty list"
+    
+    # Проверка данных первого найденного актера
+    first_actor = data["docs"][0]
+    
+    # Проверка имени
+    assert "name" in first_actor, "First movie does not contain 'name' key"
+    assert config.actor_api.lower() in first_actor["name"].lower(), f"Expected query '{config.actor_api}' in movie name but got {first_actor['name']}"
+
+@pytest.mark.api
 def test_alternative_search(auth):
     """API test for searching"""
     response = auth.alternative_searching()
@@ -98,7 +116,6 @@ def test_alternative_search(auth):
 
     else:
         print("No movies found in the response")
-
 
 @pytest.mark.api
 def test_genre_and_interval(auth):
@@ -139,4 +156,8 @@ def test_genre_and_interval(auth):
 
     else:
         print("No movies found in the response")
+
+
+    
+
 

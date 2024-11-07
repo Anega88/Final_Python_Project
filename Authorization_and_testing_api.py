@@ -46,7 +46,6 @@ class Authorization_and_testing_api:
             }
         return self.connect_to_api_with_endpoint(endpoint, params=params)
 
-
     def alternative_searching(self):
         params = {
             "page": config.page,
@@ -65,7 +64,24 @@ class Authorization_and_testing_api:
 
         return response.json()  # Попробуем преобразовать в JSON
     
+    def search__and_interval(self):
+            """Запрос для получения списка драм за указанный период."""
+            params = {
+                "page": config.page,
+                "limit": config.limit,
+                "year": config.years,
+                "genres.name": config.genre
+                }
+            # Логируем параметры запроса
+            print(f"Request parameters: {params}")
 
+            response = self.connect_to_api_with_params(params=params)
+
+            # Логируем ответ для диагностики
+            print(f"API response: {response.text}")
+
+            return response.json()  # Попробуем преобразовать в JSON
+    
     def search_genre_and_interval(self):
             """Запрос для получения списка драм за указанный период."""
             params = {
@@ -84,4 +100,13 @@ class Authorization_and_testing_api:
 
             return response.json()  # Попробуем преобразовать в JSON
 
+    def search_actor(self):
+            """Performs a search query on the API."""
+            endpoint = "/search"
+            params = {
+                "page": config.page,
+                "limit": config.limit,
+                "query": config.actor_api
+                }
+            return self.connect_to_api_with_endpoint(endpoint, params=params)
 
