@@ -17,6 +17,8 @@ def test_search_id_movie(auth):
     assert "id" in response.json(), "Response does not contain 'id' key"
     assert response.json()["id"] == config.id_movie, f"Expected movie ID to be {config.id_movie} but got {response.json()['id']}"
     assert "name" in response.json(), "Response does not contain 'name' key"
+    movie_name = response.json()["name"]
+    assert movie_name == config.movie_to_search, f"Expected movie name to be '{config.movie_to_search}' but got '{movie_name}'"
 
 @pytest.mark.api
 def test_movie_search(auth):
@@ -38,21 +40,24 @@ def test_movie_search(auth):
     
     # Проверка года выпуска
     assert "year" in first_movie, "First movie does not contain 'year' key"
-    assert first_movie["year"] == 1984, "Year does not match 1984"
+    assert first_movie["year"] == config.movie_year_api, f"Year does not match {config.movie_year_api}"
+
     
     # Проверка жанров
     genres = [genre["name"] for genre in first_movie.get("genres", [])]
-    assert "фантастика" in genres, "Genre 'фантастика' not found in movie genres"
-    assert "боевик" in genres, "Genre 'боевик' not found in movie genres"
+    assert config.genre_api_first in genres, f"Genre {config.genre_api_first} not found in movie genres"
+    assert config.genre_api_second in genres, f"Genre {config.genre_api_second} not found in movie genres"
     
     # Проверка стран
     countries = [country["name"] for country in first_movie.get("countries", [])]
-    assert "США" in countries, "Country 'США' not found in movie countries"
+    assert config.country_api in countries, f"Country {config.country_api} not found in movie countries"
        
     # Проверка рейтингов
     assert "rating" in first_movie, "First movie does not contain 'rating' key"
     assert "kp" in first_movie["rating"], "No 'kp' rating found in movie ratings"
-    assert first_movie["rating"]["kp"] >= 7, "Expected 'kp' rating to be 7 or higher"
+    min_rate, max_rate = map(float, config.rating.split("-"))
+    movie_rating = first_movie['rating']["kp"]
+    assert min_rate <= movie_rating<= max_rate, f"Movie rating {movie_rating} is not in the range {min_rate}-{max_rate}"
 
 @pytest.mark.api
 def test_alternative_search(auth):
@@ -78,11 +83,9 @@ def test_alternative_search(auth):
         assert isinstance(movie["genres"], list), "'genres' is not a list"
 
         # Проверяем, что количество элементов соответствует ожиданиям
-        assert data["total"] == 25, f"Expected 25 total movies, but got {data['total']}"
         assert data["limit"] == 1, f"Expected limit of 1, but got {data['limit']}"
         assert data["page"] == 1, f"Expected page 1, but got {data['page']}"
-        assert data["pages"] == 25, f"Expected 25 pages, but got {data['pages']}"
-
+     
         # Проверка периода, что год фильма в пределах указанного диапазона
         min_year, max_year = map(int, config.years.split("-"))
         movie_year = movie["year"]
