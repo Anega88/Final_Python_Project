@@ -1,6 +1,5 @@
 import requests
 import config
-import allure
 
 
 class Kinopoisk_testing_api:
@@ -17,9 +16,8 @@ class Kinopoisk_testing_api:
             'X-API-KEY': config.auth_token,
             'accept': 'application/json'
             }
-        response = requests.get(url, headers=headers, params=params)        
+        response = requests.get(url, headers=headers, params=params)
         return response
-    
 
     def connect_to_api_with_endpoint(self, endpoint: str, params=None):
         """
@@ -30,9 +28,8 @@ class Kinopoisk_testing_api:
             'X-API-KEY': config.auth_token,
             'accept': 'application/json'
         }
-        response = requests.get(url, headers=headers, params=params)        
+        response = requests.get(url, headers=headers, params=params)
         return response
-    
 
     def search_movie_by_id(self, movie_id: int):
         """
@@ -41,7 +38,6 @@ class Kinopoisk_testing_api:
         endpoint = f"/{movie_id}"
         params = {}
         return self.connect_to_api_with_endpoint(endpoint, params)
-
 
     def search_movie_with_query(self):
         """
@@ -56,10 +52,9 @@ class Kinopoisk_testing_api:
             }
         return self.connect_to_api_with_endpoint(endpoint, params=params)
 
-
     def alternative_searching(self):
         """
-        Запрос информации о фильме по альтернативным параметрам, 
+        Запрос информации о фильме по альтернативным параметрам,
         такие как года релиза и рейтинг фильма.
         """
         params = {
@@ -75,35 +70,32 @@ class Kinopoisk_testing_api:
         print(f"API response: {response.text}")
         return response.json()
 
-
     def search_genre_and_interval(self):
-            """
-            Запрос информации о фильме по альтернативным параметрам, 
-            такие как года релиза и жанра фильма.
-            """
-            params = {
-                "page": config.page,
-                "limit": config.limit,
-                "year": config.years,
-                "genres.name": config.genre
-                }
-            # Логируем параметры запроса
-            print(f"Request parameters: {params}")
-            response = self.connect_to_api_with_params(params=params)
-            # Логируем ответ для диагностики
-            print(f"API response: {response.text}")
-            return response.json()
-
+        """
+        Запрос информации о фильме по альтернативным параметрам,
+        такие как года релиза и жанра фильма.
+        """
+        params = {
+            "page": config.page,
+            "limit": config.limit,
+            "year": config.years,
+            "genres.name": config.genre
+            }
+        # Логируем параметры запроса
+        print(f"Request parameters: {params}")
+        response = self.connect_to_api_with_params(params=params)
+        # Логируем ответ для диагностики
+        print(f"API response: {response.text}")
+        return response.json()
 
     def search_actor_with_query(self):
-            """
-            Запрос с параметрами для получения информации об актере.
-            """
-            endpoint = "/search"
-            params = {
-                "page": config.page,
-                "limit": config.limit,
-                "query": config.actor_api
-                }
-            return self.connect_to_api_with_endpoint(endpoint, params=params)
-
+        """
+        Запрос с параметрами для получения информации об актере.
+        """
+        endpoint = "/search"
+        params = {
+            "page": config.page,
+            "limit": config.limit,
+            "query": config.actor_api
+            }
+        return self.connect_to_api_with_endpoint(endpoint, params=params)
