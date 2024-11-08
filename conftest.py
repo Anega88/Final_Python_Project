@@ -1,5 +1,5 @@
-from Authorization_and_testing_api import Authorization_and_testing_api
-from Authorization_and_testing_ui import Authorization_and_testing_ui
+from Kinopoisk_testing_api import Kinopoisk_testing_api
+from Kinopoisk_testing_ui import Kinopoisk_testing_ui
 import config
 import pytest
 from selenium import webdriver
@@ -37,7 +37,7 @@ def setup_auth_and_driver(test_config):
     sleep(2)
 
     # Инициализация объекта авторизации
-    auth_ui = Authorization_and_testing_ui(test_config)
+    auth_ui = Kinopoisk_testing_ui(test_config)
     auth_ui.set_driver(driver)
 
 
@@ -88,4 +88,4 @@ def test_config():
 @pytest.fixture(scope="function")
 def auth_api(test_config):
     """Fixture to set up the Authorization API client."""
-    return Authorization_and_testing_api(test_config.base_url_api, test_config.auth_token)
+    return Kinopoisk_testing_api(test_config.base_url_api, test_config.auth_token)
