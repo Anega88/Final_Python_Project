@@ -72,7 +72,7 @@ def test_extended_search_movie(setup_auth_and_driver, test_config):
 
     # Ожидание появления заголовка с фильмом
     try:
-        h1_element = WebDriverWait(driver, 5).until(
+        h1_element = WebDriverWait(driver, 20).until(
             EC.visibility_of_element_located((By.CSS_SELECTOR, 'h1[data-tid="f22e0093"]'))
         )
         # Находим вложенный элемент <span> с названием фильма

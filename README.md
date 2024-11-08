@@ -1,6 +1,12 @@
 # Final_Python_Project
 Final Python project - authorization testing
 
+### Библиотеки (!)
+- pyp install pytest
+- pip install selenium
+- pip install webdriver-manager 
+- pip install allure-pytest
+
 ### Шаги
 1. Склонировать проект 'git clone https://github.com/имя_пользователя/
    pytest_ui_api_template.git'

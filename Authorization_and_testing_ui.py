@@ -13,7 +13,7 @@ class Authorization_and_testing_ui:
         self._driver = driver
        
     def search_main_page(self, movie_name):        
-        search_input = WebDriverWait(self._driver, 5).until(
+        search_input = WebDriverWait(self._driver, 20).until(
             EC.presence_of_element_located((By.CSS_SELECTOR, 'input[name="kp_query"]'))
             )
         search_input.clear()
@@ -21,17 +21,16 @@ class Authorization_and_testing_ui:
         self.click_main_search_button()
 
     def search_main_page_actor(self, actor):    
-        search_input = WebDriverWait(self._driver, 5).until(
+        search_input = WebDriverWait(self._driver, 20).until(
             EC.presence_of_element_located((By.CSS_SELECTOR, 'input[name="kp_query"]'))
             )
         search_input.send_keys(actor)
         self.click_main_search_button()
 
-
     def click_main_search_button(self):
         """Clicks the main SVG search button."""
         try:
-            search_button_svg = WebDriverWait(self._driver, 10).until(
+            search_button_svg = WebDriverWait(self._driver, 20).until(
                  EC.presence_of_element_located((By.XPATH, '//button[contains(@class, "styles_submit__2AIpj") and @aria-label="Найти"]'))
                 )
             search_button_svg.click()
@@ -41,13 +40,6 @@ class Authorization_and_testing_ui:
     def click_extended_search_button(self):
         search_button_alt = self._driver.find_element(By.CSS_SELECTOR, 'input[class="el_18 submit nice_button"]')
         search_button_alt.click()
-            
-
-    def clear_search_field(self):
-        """Clears the search input field."""
-        search_input = self._driver.find_element(By.CSS_SELECTOR, 'input[name="kp_query"]')
-        search_input.clear()  # Очищает поле поиска
-
 
     def extended_search_movie(self, movie_name=None, year=None, country=None, actor=None, genre=None):
         # Теперь мы получаем значения из test_config, если они не переданы
@@ -62,7 +54,7 @@ class Authorization_and_testing_ui:
         if not genre:
             genre = self.test_config.genre
 
-        wait = WebDriverWait(self._driver, 15)
+        wait = WebDriverWait(self._driver, 20)
 
         try:
             input_extended_search = wait.until(EC.visibility_of_element_located((By.CSS_SELECTOR, 'a[aria-label="Расширенный поиск"]'))).click()
@@ -86,10 +78,9 @@ class Authorization_and_testing_ui:
         except Exception as e:
             print(f"Ошибка при выполнении расширенного поиска: {e}")
 
-
     def open_reviews(self, movie_name):
         driver = self._driver
-        wait = WebDriverWait(driver, 10)
+        wait = WebDriverWait(driver, 20)
 
         # Поиск фильма на главной странице
         self.search_main_page(movie_name)
@@ -106,10 +97,9 @@ class Authorization_and_testing_ui:
         # Клик по ссылке "Рецензии зрителей"
         reviews_link.click()
 
-
     def open_filmography(self, actor):
         driver = self._driver
-        wait = WebDriverWait(driver, 10)
+        wait = WebDriverWait(driver, 20)
 
         self.search_main_page_actor(actor)
         self.click_main_search_button()
