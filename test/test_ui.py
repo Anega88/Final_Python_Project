@@ -90,7 +90,7 @@ def test_extended_search_movie(setup_auth_and_driver, test_config):
 
     with allure.step("Сверить ожидаемый результат с фактическим (название и год фильма.)"): 
         try:
-            h1_element = WebDriverWait(driver, 20).until(
+            h1_element = WebDriverWait(driver, 10).until(
                 EC.visibility_of_element_located((By.CSS_SELECTOR, 'h1[data-tid="f22e0093"]'))
                 )
             movie_element = h1_element.find_element(By.CSS_SELECTOR, 'span[data-tid="75209b22"]')
@@ -133,7 +133,7 @@ def test_search_and_open_actor_filmography(setup_auth_and_driver, test_config):
     with allure.step("Найти актреа по его имени и перейти к фильмографии актера"):
         auth_ui.open_filmography(test_config.actor)
 
-    wait = WebDriverWait(driver, 20)
+    wait = WebDriverWait(driver, 10)
     actor_header = wait.until(EC.presence_of_element_located((By.XPATH, f'//h1[contains(text(), "{test_config.actor}")]')))
 
     with allure.step("Убедиться, что заголовок содержит имя актера"):

@@ -17,7 +17,7 @@ class Kinopoisk_testing_ui:
         """
         Запрос поиска фильма с главной страницы сайта.
         """       
-        search_input = WebDriverWait(self._driver, 20).until(
+        search_input = WebDriverWait(self._driver, 10).until(
             EC.presence_of_element_located((By.CSS_SELECTOR, 'input[name="kp_query"]'))
             )
         search_input.clear()
@@ -28,7 +28,7 @@ class Kinopoisk_testing_ui:
         """
         Запрос поиска актера с главной страницы сайта.
         """
-        search_input = WebDriverWait(self._driver, 20).until(
+        search_input = WebDriverWait(self._driver, 10).until(
             EC.presence_of_element_located((By.CSS_SELECTOR, 'input[name="kp_query"]'))
             )
         search_input.send_keys(actor)
@@ -39,7 +39,7 @@ class Kinopoisk_testing_ui:
         Запрос на нажатие кнопки Поиск на главной странице сайта.
         """
         try:
-            search_button_svg = WebDriverWait(self._driver, 20).until(
+            search_button_svg = WebDriverWait(self._driver, 10).until(
                  EC.presence_of_element_located((By.XPATH, '//button[contains(@class, "styles_submit__2AIpj") and @aria-label="Найти"]'))
                 )
             search_button_svg.click()
@@ -71,7 +71,7 @@ class Kinopoisk_testing_ui:
         if not genre:
             genre = self.test_config.genre
 
-        wait = WebDriverWait(self._driver, 20)
+        wait = WebDriverWait(self._driver, 10)
 
         try:
             input_extended_search = wait.until(EC.visibility_of_element_located((By.CSS_SELECTOR, 'a[aria-label="Расширенный поиск"]'))).click()
@@ -101,7 +101,7 @@ class Kinopoisk_testing_ui:
         сайта и открывает Рецензии зрителей найденного фильма.
         """
         driver = self._driver
-        wait = WebDriverWait(driver, 20)
+        wait = WebDriverWait(driver, 10)
 
         self.search_main_page_actor(movie_name)
         self.click_main_search_button()
@@ -120,7 +120,7 @@ class Kinopoisk_testing_ui:
         сайта и открывает Фильмографию актера.
         """
         driver = self._driver
-        wait = WebDriverWait(driver, 20)
+        wait = WebDriverWait(driver, 10)
 
         self.search_main_page_actor(actor)
         self.click_main_search_button()
